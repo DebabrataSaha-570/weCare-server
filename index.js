@@ -50,6 +50,8 @@ async function run() {
     const usersCollection = db.collection("users");
     const foodCollection = db.collection("foods ");
     const newsCollection = db.collection("news");
+    const testimonialCollection = db.collection("testimonials");
+    const volunteerCollection = db.collection("volunteers");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -124,14 +126,46 @@ async function run() {
       const result = await foodCollection.insertOne(foodData);
       res.json(result);
     });
-
-    //Get all food supplies
-    app.get("/api/v1/supplies", async (req, res) => {
-      const supplies = foodCollection.find({});
-      const result = await supplies.toArray();
+    //create testimonials
+    app.post("/api/v1/create-testimonial", async (req, res) => {
+      const testimonialData = req.body;
+      const result = await testimonialCollection.insertOne(testimonialData);
+      console.log("result", result);
+      res.json(result);
+    });
+    //add Volunteer
+    app.post("/api/v1/add-volunteer", async (req, res) => {
+      const volunteerData = req.body;
+      const result = await volunteerCollection.insertOne(volunteerData);
+      console.log("result", result);
       res.json(result);
     });
 
+    //Get all food supplies
+    app.get("/api/v1/supplies", async (req, res) => {
+      let query = {};
+      if (req.query.category) {
+        query.category = req.query.category;
+      }
+      const supplies = foodCollection.find(query);
+      const result = await supplies.toArray();
+      // const supplies = foodCollection.find({});
+      // const result = await supplies.toArray();
+      res.json(result);
+    });
+    //Get all testimonials
+    app.get("/api/v1/testimonials", async (req, res) => {
+      const supplies = testimonialCollection.find({});
+      const result = await supplies.toArray();
+      res.json(result);
+    });
+    app.get("/api/v1/volunteers", async (req, res) => {
+      const volunteers = volunteerCollection.find({});
+      const result = await volunteers.toArray();
+      res.json(result);
+    });
+
+    //Get all latest news
     app.get("/api/v1/latest-news", async (req, res) => {
       const supplies = newsCollection.find({});
       const result = await supplies.toArray();
