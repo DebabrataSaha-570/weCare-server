@@ -52,6 +52,7 @@ async function run() {
     const newsCollection = db.collection("news");
     const testimonialCollection = db.collection("testimonials");
     const volunteerCollection = db.collection("volunteers");
+    const gratitudeCollection = db.collection("gratitudes");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -140,6 +141,13 @@ async function run() {
       console.log("result", result);
       res.json(result);
     });
+    //add Gratitude
+    app.post("/api/v1/add-gratitude", async (req, res) => {
+      const gratitudeData = req.body;
+      const result = await gratitudeCollection.insertOne(gratitudeData);
+      console.log("result", result);
+      res.json(result);
+    });
 
     //Get all food supplies
     app.get("/api/v1/supplies", async (req, res) => {
@@ -162,6 +170,13 @@ async function run() {
     app.get("/api/v1/volunteers", async (req, res) => {
       const volunteers = volunteerCollection.find({});
       const result = await volunteers.toArray();
+      res.json(result);
+    });
+
+    //Get all gratitude posts
+    app.get("/api/v1/gratitudes", async (req, res) => {
+      const gratitudes = gratitudeCollection.find({});
+      const result = await gratitudes.toArray();
       res.json(result);
     });
 
@@ -208,6 +223,7 @@ async function run() {
           image: updatedData.image,
           donorName: updatedData.donorName,
           donorEmail: updatedData.donorEmail,
+          donorImage: updatedData.donorImage,
         },
       };
       const options = { upsert: true };
