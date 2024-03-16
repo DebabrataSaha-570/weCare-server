@@ -84,7 +84,6 @@ async function run() {
 
     // User Login
     app.post("/api/v1/login", async (req, res) => {
-      console.log("login data receive", req.body);
       const { email, password } = req.body;
 
       // Find user by email
@@ -131,21 +130,18 @@ async function run() {
     app.post("/api/v1/create-testimonial", async (req, res) => {
       const testimonialData = req.body;
       const result = await testimonialCollection.insertOne(testimonialData);
-      console.log("result", result);
       res.json(result);
     });
     //add Volunteer
     app.post("/api/v1/add-volunteer", async (req, res) => {
       const volunteerData = req.body;
       const result = await volunteerCollection.insertOne(volunteerData);
-      console.log("result", result);
       res.json(result);
     });
     //add Gratitude
     app.post("/api/v1/add-gratitude", async (req, res) => {
       const gratitudeData = req.body;
       const result = await gratitudeCollection.insertOne(gratitudeData);
-      console.log("result", result);
       res.json(result);
     });
 
@@ -200,16 +196,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await foodCollection.deleteOne(query);
-      console.log(result);
       res.json(result);
     });
 
     //update single supply
     app.put("/api/v1/supply/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const updatedData = req.body;
-      console.log("updated Data", updatedData);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
