@@ -24,12 +24,7 @@ app.use(
   })
 );
 
-// app.use(
-//   cors({
-//     origin: "*",
-//     credentials: true,
-//   })
-// );
+// app.use(cors());
 
 app.use(express.json());
 
@@ -56,7 +51,7 @@ async function run() {
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
-      const { name, email, password } = req.body;
+      const { name, email, password, role } = req.body;
       // Check if email already exists
       const existingUser = await usersCollection.findOne({ email });
       if (existingUser) {
@@ -74,6 +69,7 @@ async function run() {
         name,
         email,
         password: hashedPassword,
+        role,
       });
 
       res.status(201).json({
@@ -100,7 +96,7 @@ async function run() {
 
       // Generate JWT token
       const token = jwt.sign(
-        { email: user.email, name: user.name },
+        { email: user.email, name: user.name, role: user.role },
         process.env.JWT_SECRET,
         {
           expiresIn: process.env.EXPIRES_IN,
@@ -166,6 +162,11 @@ async function run() {
     app.get("/api/v1/volunteers", async (req, res) => {
       const volunteers = volunteerCollection.find({});
       const result = await volunteers.toArray();
+      res.json(result);
+    });
+    app.get("/api/v1/users", async (req, res) => {
+      const users = usersCollection.find({});
+      const result = await users.toArray();
       res.json(result);
     });
 
