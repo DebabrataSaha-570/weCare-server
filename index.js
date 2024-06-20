@@ -192,6 +192,30 @@ async function run() {
       res.json(result);
     });
 
+    //Get Single Testimonial
+    app.get("/api/v1/testimonial/:email", async (req, res) => {
+      const email = req.params.email;
+      const testimonial = await testimonialCollection.findOne({ email });
+      if (!testimonial) {
+        return res.status(401).json({ message: "No review found." });
+      }
+
+      res.json(testimonial);
+    });
+
+    //Get user donation
+    app.get("/api/v1/donation/:email", async (req, res) => {
+      const email = req.params.email;
+      const donation = await foodCollection
+        .find({ donorEmail: email })
+        .toArray();
+      if (!donation) {
+        return res.status(401).json({ message: "No donation found." });
+      }
+
+      res.json(donation);
+    });
+
     //Delete Single Supply
     app.delete("/api/v1/delete-supply/:id", async (req, res) => {
       const id = req.params.id;
@@ -222,6 +246,28 @@ async function run() {
       };
       const options = { upsert: true };
       const result = await foodCollection.updateOne(filter, updateDoc, options);
+      res.json(result);
+    });
+
+    app.put("/api/v1/userRole/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("id", id);
+      const data = req.body;
+      console.log(data);
+
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: data.role,
+        },
+      };
+      const options = { upsert: true };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      console.log(result);
       res.json(result);
     });
 
