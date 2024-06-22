@@ -216,6 +216,17 @@ async function run() {
       res.json(donation);
     });
 
+    //Get user info
+    app.get("/api/v1/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = await usersCollection.findOne({ email });
+      if (!user) {
+        return res.status(401).json({ message: "No user found." });
+      }
+
+      res.json(user);
+    });
+
     //Delete Single Supply
     app.delete("/api/v1/delete-supply/:id", async (req, res) => {
       const id = req.params.id;
