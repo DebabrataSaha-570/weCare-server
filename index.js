@@ -96,7 +96,12 @@ async function run() {
 
       // Generate JWT token
       const token = jwt.sign(
-        { email: user.email, name: user.name, role: user.role },
+        {
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          photo: user.photo,
+        },
         process.env.JWT_SECRET,
         {
           expiresIn: process.env.EXPIRES_IN,
@@ -280,6 +285,75 @@ async function run() {
       );
       console.log(result);
       res.json(result);
+    });
+
+    app.put("/api/v1/userInfo/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log({ email });
+      const userData = req.body;
+
+      // Basic validation
+      if (
+        !userData.name ||
+        !userData.phoneNumber ||
+        !userData.address ||
+        !userData.photo
+      ) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      try {
+        const user = await usersCollection.findOne({ email });
+        if (!user) {
+          return res.status(404).json({ message: "No user found." });
+        }
+
+        let updateDoc = {};
+        // let newPassword = await bcrypt.hash(userData.password, 10);
+
+        let newPassword;
+        if (userData.password !== undefined) {
+          newPassword = await bcrypt.hash(userData.password, 10);
+        }
+
+        if (
+          email === "sahadebabrata570@gmail.com" ||
+          email === "admin@gmail.com" ||
+          email === "emilyjohnson777@gmail.com"
+        ) {
+          updateDoc = {
+            $set: {
+              name: userData.name,
+              phoneNumber: userData.phoneNumber,
+              address: userData.address,
+              photo: userData.photo,
+            },
+          };
+        } else {
+          updateDoc = {
+            $set: {
+              name: userData.name,
+              password: newPassword,
+              phoneNumber: userData.phoneNumber,
+              address: userData.address,
+              photo: userData.photo,
+            },
+          };
+        }
+
+        const options = { upsert: true };
+
+        const result = await usersCollection.updateOne(
+          { email },
+          updateDoc,
+          options
+        );
+        console.log(result);
+        res.json(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something Went Wrong." });
+      }
     });
 
     // Start the server
